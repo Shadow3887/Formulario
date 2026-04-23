@@ -43,7 +43,40 @@
         .btn-pdf:hover {
             background: linear-gradient(95deg, #9b2c0c, #c55a1c);
         }
-        /* Estilos responsivos adicionales */
+        /* Loader para la generación del PDF */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        }
+        .loader-content {
+            background: white;
+            padding: 25px 35px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #2e7d32;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         @media (max-width: 640px) {
             .container-padding {
                 padding-left: 1rem;
@@ -56,16 +89,8 @@
                 font-size: 1.125rem !important;
             }
         }
-        /* Ajustes para touch en móviles */
         button, input[type="number"], input[type="text"], input[type="date"] {
             touch-action: manipulation;
-        }
-        /* Contenedor del PDF para móvil */
-        @media (max-width: 768px) {
-            .pdf-container-scale {
-                width: 100%;
-                overflow-x: auto;
-            }
         }
     </style>
 </head>
@@ -91,7 +116,6 @@
             </div>
         </div>
 
-        <!-- Grid responsivo: en móvil se apila verticalmente -->
         <div class="flex flex-col lg:grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-9">
             <!-- FORMULARIO -->
             <div class="glass-effect rounded-2xl sm:rounded-3xl card-shadow p-5 sm:p-7 md:p-8 border border-white/50">
@@ -116,7 +140,6 @@
                     <div class="border-t border-green-200 my-4 sm:my-5"></div>
                     
                     <div class="space-y-4 sm:space-y-5">
-                        <!-- Cartón -->
                         <div class="material-card bg-white/70 rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-amber-600 shadow-sm">
                             <div class="flex flex-wrap justify-between items-center gap-2">
                                 <div class="flex items-center gap-2 sm:gap-3">
@@ -133,10 +156,8 @@
                                     <input type="number" id="pesoCarton" value="0" min="0" max="20000" step="0.1" class="w-20 sm:w-28 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg sm:rounded-xl text-center text-base sm:text-lg font-medium focus:ring-2 focus:ring-amber-400">
                                 </div>
                             </div>
-                            <p class="text-xs text-gray-400 mt-1 sm:mt-2 pl-1 block sm:hidden">Peso en kilogramos</p>
                         </div>
 
-                        <!-- PET -->
                         <div class="material-card bg-white/70 rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-blue-500 shadow-sm">
                             <div class="flex flex-wrap justify-between items-center gap-2">
                                 <div class="flex items-center gap-2 sm:gap-3">
@@ -153,10 +174,8 @@
                                     <input type="number" id="pesoPet" value="0" min="0" max="20000" step="0.1" class="w-20 sm:w-28 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg sm:rounded-xl text-center text-base sm:text-lg font-medium focus:ring-2 focus:ring-blue-400">
                                 </div>
                             </div>
-                            <p class="text-xs text-gray-400 mt-1 sm:mt-2 pl-1 block sm:hidden">Plástico · envases</p>
                         </div>
 
-                        <!-- Aluminio -->
                         <div class="material-card bg-white/70 rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-gray-500 shadow-sm">
                             <div class="flex flex-wrap justify-between items-center gap-2">
                                 <div class="flex items-center gap-2 sm:gap-3">
@@ -173,11 +192,9 @@
                                     <input type="number" id="pesoAluminio" value="0" min="0" max="20000" step="0.1" class="w-20 sm:w-28 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg sm:rounded-xl text-center text-base sm:text-lg font-medium focus:ring-2 focus:ring-gray-500">
                                 </div>
                             </div>
-                            <p class="text-xs text-gray-400 mt-1 sm:mt-2 pl-1 block sm:hidden">Latas y envases</p>
                         </div>
                     </div>
                     
-                    <!-- Botones responsivos: en móvil ocupan todo el ancho -->
                     <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-3 sm:pt-4">
                         <button type="button" id="calcularBtn" class="btn-primary text-white font-bold py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-md w-full sm:w-auto text-sm sm:text-base">
                             <i class="fas fa-calculator text-base sm:text-lg"></i> Calcular total
@@ -189,7 +206,7 @@
                 </form>
             </div>
 
-            <!-- RESUMEN - responsivo -->
+            <!-- RESUMEN -->
             <div class="glass-effect rounded-2xl sm:rounded-3xl card-shadow p-5 sm:p-7 md:p-8 border border-white/50 flex flex-col">
                 <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
                     <div class="bg-amber-100 p-2 sm:p-3 rounded-xl sm:rounded-2xl">
@@ -227,6 +244,11 @@
         const generarPdfBtn = document.getElementById('generarPdfBtn');
         const dynamicResumenDiv = document.getElementById('dynamicResumen');
 
+        // Detectar si es dispositivo móvil
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
         function getPesoKg(element) {
             let val = parseFloat(element.value);
             return isNaN(val) || val < 0 ? 0 : val;
@@ -240,6 +262,26 @@
                 if (m === '>') return '&gt;';
                 return m;
             });
+        }
+
+        // Mostrar loader
+        function showLoader() {
+            const loader = document.createElement('div');
+            loader.id = 'pdfLoader';
+            loader.className = 'loader-overlay';
+            loader.innerHTML = `
+                <div class="loader-content">
+                    <div class="spinner"></div>
+                    <p style="color: #2e7d32; font-weight: 600; margin: 0;">Generando PDF...</p>
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 8px;">Por favor espera</p>
+                </div>
+            `;
+            document.body.appendChild(loader);
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('pdfLoader');
+            if (loader) loader.remove();
         }
 
         function actualizarResumen() {
@@ -323,7 +365,6 @@
             dynamicResumenDiv.innerHTML = html;
         }
         
-        // FUNCIÓN PARA PDF - Diseño responsivo optimizado para cualquier dispositivo
         async function generarPDF() {
             actualizarResumen();
             
@@ -343,7 +384,12 @@
             const fechaPesaje = fechaPesajeInput.value || "No registrada";
             const fechaGeneracion = new Date().toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
             
-            // Contenedor para PDF con diseño responsivo y ancho optimizado para A4
+            // Mostrar loader mientras se genera el PDF (especialmente útil en móviles)
+            showLoader();
+            
+            // Pequeño delay para que el loader se renderice (mejor experiencia en móvil)
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
             const pdfContainer = document.createElement('div');
             pdfContainer.style.width = '700px';
             pdfContainer.style.backgroundColor = '#ffffff';
@@ -452,8 +498,11 @@
             document.body.appendChild(pdfContainer);
             
             try {
+                // En móviles usar una escala ligeramente menor para mejor rendimiento
+                const scaleValue = isMobileDevice() ? 2.2 : 2.8;
+                
                 const canvas = await html2canvas(pdfContainer, {
-                    scale: 2.5,
+                    scale: scaleValue,
                     backgroundColor: '#ffffff',
                     logging: false,
                     useCORS: false,
@@ -475,12 +524,23 @@
                 
                 pdf.addImage(imgData, 'PNG', 20, yPosition, imgWidth, imgHeight);
                 const nombreArchivo = `Certificado_Pesaje_${nombreLugar.replace(/\s+/g, '_').substring(0, 30)}.pdf`;
+                
+                // En móviles, asegurar la descarga
                 pdf.save(nombreArchivo);
+                
+                // Pequeño mensaje de éxito (opcional)
+                setTimeout(() => {
+                    if (isMobileDevice()) {
+                        console.log('PDF generado correctamente. Revisa la carpeta de descargas.');
+                    }
+                }, 500);
+                
             } catch (error) {
                 console.error('Error PDF:', error);
-                alert('Error al generar el PDF. Intente nuevamente.');
+                alert('Error al generar el PDF. Por favor, intente nuevamente.');
             } finally {
                 document.body.removeChild(pdfContainer);
+                hideLoader();
             }
         }
         
@@ -498,6 +558,11 @@
                 fechaPesajeInput.value = new Date().toISOString().split('T')[0];
             }
             actualizarResumen();
+            
+            // Mensaje informativo para móviles
+            if (isMobileDevice()) {
+                console.log('Modo móvil detectado - La descarga del PDF está optimizada');
+            }
         });
     </script>
 </body>
